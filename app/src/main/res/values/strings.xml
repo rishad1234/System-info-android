@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Sysfo</string>
+    <string-array name="items">
+        <item>System</item>
+        <item>CPU</item>
+        <item>Display</item>
+        <item>Network</item>
+        <item>Battery</item>
+        <item>Android</item>
+        <item>Device</item>
+        <item>Thermal</item>
+        <item>Apps</item>
+    </string-array>
+
+</resources>

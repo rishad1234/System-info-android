@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
@@ -51,6 +52,8 @@ public class ItemActivity extends AppCompatActivity {
                 displayInfo(textView);
             } else if (value.equals("Network")) {
                 networkInfo(textView);
+            } else if(value.equals("Battery")){
+                batteryInfo(textView);
             }
         }
     }
@@ -185,6 +188,29 @@ public class ItemActivity extends AppCompatActivity {
             default:
                 return "None";
         }
+    }
+
+    public void batteryInfo(TextView view){
+        BatteryManager manager = (BatteryManager)getSystemService(BATTERY_SERVICE);
+        int batteryLevel = manager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        int capacity = manager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        long avgCurrent = manager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE);
+        long currentNow = manager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW);
+
+        String data = "Battery Level : " + batteryLevel + "%\n";
+        data += "Plug in : " + isPlugedIn() + "\n";
+        data += "Battery Health : " + capacity + "%\n";
+        data += "Current average : " + (avgCurrent / 1000) + "\n";
+        data += "Current now : " + (currentNow / 1000) + "\n";
+
+        view.setText(data);
+    }
+
+    public boolean isPlugedIn(){
+        BatteryManager manager = (BatteryManager)getSystemService(BATTERY_SERVICE);
+        int plugedIn = manager.getIntProperty(BatteryManager.BATTERY_PLUGGED_AC);
+
+        return plugedIn == 0 ? true : false;
     }
 
 }

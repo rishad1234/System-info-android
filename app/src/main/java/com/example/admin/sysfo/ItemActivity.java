@@ -1,11 +1,15 @@
 package com.example.admin.sysfo;
 
 import android.app.ActivityManager;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -14,6 +18,8 @@ import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.Pattern;
+
+import javax.microedition.khronos.opengles.GL10;
 
 public class ItemActivity extends AppCompatActivity {
 
@@ -31,6 +37,10 @@ public class ItemActivity extends AppCompatActivity {
                 addSystemFeatures(textView);
             } else if(value.equals("CPU")){
                 cpuInfo(textView);
+            } else if(value.equals("Display")){
+                displayInfo(textView);
+            } else if(value.equals("Network")){
+                networkInfo(textView);
             }
         }
     }
@@ -108,6 +118,35 @@ public class ItemActivity extends AppCompatActivity {
             }
         }
         return sb.toString();
+
+    }
+
+    public void displayInfo(TextView view){
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        String hdr = "No";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+             hdr = display.getHdrCapabilities().getSupportedHdrTypes().length > 0 ? "Yes" : "No";
+        }
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int densityDpi = (int)(metrics.density * 160f);
+
+        String data = "resolution: " + size.x + " X " + size.y + "\n";
+        data += "Display ID : " + display.getDisplayId() + "\n";
+        data += "Display Name : " + display.getName() + "\n";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            data += "HDR : " +  hdr  + "\n";
+        }
+        data += "Refresh rate : " + Math.round(display.getRefreshRate()) + "\n";
+        data += "Density : " + densityDpi + "ppi" + "\n";
+
+        view.setText(data);
+    }
+
+    public void networkInfo(TextView view){
 
     }
 

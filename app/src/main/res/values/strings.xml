@@ -6,10 +6,6 @@
         <item>Display</item>
         <item>Network</item>
         <item>Battery</item>
-        <item>Android</item>
-        <item>Device</item>
-        <item>Thermal</item>
-        <item>Apps</item>
     </string-array>
 
 </resources>

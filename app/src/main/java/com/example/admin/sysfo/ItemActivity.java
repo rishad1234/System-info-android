@@ -210,7 +210,7 @@ public class ItemActivity extends AppCompatActivity {
         BatteryManager manager = (BatteryManager)getSystemService(BATTERY_SERVICE);
         int plugedIn = manager.getIntProperty(BatteryManager.BATTERY_PLUGGED_AC);
 
-        return plugedIn == 0 ? true : false;
+        return plugedIn == 0;
     }
 
 }

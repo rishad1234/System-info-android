@@ -1,12 +1,21 @@
 package com.example.admin.sysfo;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
+import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -17,6 +26,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.microedition.khronos.opengles.GL10;
@@ -35,11 +45,11 @@ public class ItemActivity extends AppCompatActivity {
             String value = bundle.getString("item_name");
             if (value.equals("System")) {
                 addSystemFeatures(textView);
-            } else if(value.equals("CPU")){
+            } else if (value.equals("CPU")) {
                 cpuInfo(textView);
-            } else if(value.equals("Display")){
+            } else if (value.equals("Display")) {
                 displayInfo(textView);
-            } else if(value.equals("Network")){
+            } else if (value.equals("Network")) {
                 networkInfo(textView);
             }
         }
@@ -67,7 +77,7 @@ public class ItemActivity extends AppCompatActivity {
         data += "Device ID                : " + Build.ID + "\n";
         data += "Available memory : " + availableMegs + "MB" + "\n";
         data += "Installed memory  : " + installed_memory + "MB" + "\n";
-        data += "Free storage           : " + (getAvailableMemorySize()/(1024*1024)) + "MB" + "\n";
+        data += "Free storage           : " + (getAvailableMemorySize() / (1024 * 1024)) + "MB" + "\n";
         view.setText(data);
     }
 
@@ -79,7 +89,7 @@ public class ItemActivity extends AppCompatActivity {
 //        return totalBlocks * blockSize;
 //    }
 
-    public static long getAvailableMemorySize(){
+    public static long getAvailableMemorySize() {
         File path = Environment.getDataDirectory();
         StatFs stat = new StatFs(path.getPath());
         long blockSize = stat.getBlockSizeLong();
@@ -88,7 +98,7 @@ public class ItemActivity extends AppCompatActivity {
     }
 
 
-    public void cpuInfo(TextView view){
+    public void cpuInfo(TextView view) {
         String data = "Cores        : " + getNumCores() + "\n";
         data += "Threads        : " + getNumCores() * 2 + "\n";
         data += "Info        : " + getInfo() + "\n";
@@ -121,24 +131,24 @@ public class ItemActivity extends AppCompatActivity {
 
     }
 
-    public void displayInfo(TextView view){
+    public void displayInfo(TextView view) {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
 
         String hdr = "No";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-             hdr = display.getHdrCapabilities().getSupportedHdrTypes().length > 0 ? "Yes" : "No";
+            hdr = display.getHdrCapabilities().getSupportedHdrTypes().length > 0 ? "Yes" : "No";
         }
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        int densityDpi = (int)(metrics.density * 160f);
+        int densityDpi = (int) (metrics.density * 160f);
 
         String data = "resolution: " + size.x + " X " + size.y + "\n";
         data += "Display ID : " + display.getDisplayId() + "\n";
         data += "Display Name : " + display.getName() + "\n";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            data += "HDR : " +  hdr  + "\n";
+            data += "HDR : " + hdr + "\n";
         }
         data += "Refresh rate : " + Math.round(display.getRefreshRate()) + "\n";
         data += "Density : " + densityDpi + "ppi" + "\n";
@@ -146,8 +156,35 @@ public class ItemActivity extends AppCompatActivity {
         view.setText(data);
     }
 
-    public void networkInfo(TextView view){
 
+
+    public void networkInfo(TextView view) {
+        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        String data = "NetWork Operator: " + phoneType() + "\n";
+        if(phoneType().equals("GSM")){
+            data += "Network Operator : " + manager.getNetworkOperatorName() + "\n";
+        }
+        data += "Network countryISO : " + manager.getNetworkCountryIso() + "\n";
+        data += "Sim countryISO : " + manager.getSimCountryIso() + "\n";
+        data += "Sim Operator : " + manager.getSimOperator() + "\n";
+        data += "Sim Operator name : " + manager.getSimOperatorName() + "\n";
+        data += "Network roaming : " + manager.isNetworkRoaming() + "\n";
+        data += "Icc Card : " + manager.hasIccCard() + "\n";
+        view.setText(data);
+    }
+
+    public String phoneType(){
+        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        switch(manager.getPhoneType()){
+            case TelephonyManager.PHONE_TYPE_CDMA :
+                return "CDMA";
+            case TelephonyManager.PHONE_TYPE_GSM :
+                return "GSM";
+            case TelephonyManager.PHONE_TYPE_SIP :
+                return "STP";
+            default:
+                return "None";
+        }
     }
 
 }
